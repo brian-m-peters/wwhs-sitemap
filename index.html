@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WWHS — Proposed Sitemap</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --clinician:    #8B7DC8;
+      --clinician-bg: #EFECFB;
+      --shared:       #5BA86A;
+      --shared-bg:    #E8F5EA;
+      --client:       #E89C4A;
+      --client-bg:    #FEF1E0;
+      --utility:      #d9d9d9;
+      --sunset:       #D97A7A;
+      --sunset-bg:    #FCEAEA;
+      --accent:       #7B5EA7;
+      --accent-light: rgba(123,94,167,0.1);
+      --text:         #18182A;
+      --text-sub:     #52526E;
+      --text-muted:   #9090A8;
+      --border:       #E4E4EE;
+      --bg:           #F5F5FA;
+      --white:        #FFFFFF;
+      --shadow-sm:    0 1px 3px rgba(0,0,0,0.07);
+      --shadow-md:    0 4px 14px rgba(0,0,0,0.09);
+      --shadow-lg:    0 10px 30px rgba(0,0,0,0.14);
+      --footer-h:     52px;
+      --radius:       10px;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg); color: var(--text);
+      min-height: 100vh; overflow-x: hidden;
+    }
+
+    /* ── NAV ─────────────────────────────────────────────── */
+    .nav {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--white); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center;
+      padding: 0 48px; height: 70px; gap: 12px;
+    }
+    .nav-brand { display: flex; flex-direction: column; gap: 1px; flex: 1; }
+    .nav-brand-name { font-size: 15px; font-weight: 700; letter-spacing: -.3px; }
+    .nav-brand-sub  { font-size: 12px; color: var(--text-muted); }
+    .nav-right { display: flex; align-items: center; gap: 10px; }
+
+    .version-btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: 13px; font-weight: 600; color: var(--text-sub);
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 8px; padding: 7px 13px; cursor: pointer;
+      font-family: inherit; transition: all .15s;
+    }
+    .version-btn:hover { background: #EEEEF6; border-color: #CACAD8; }
+    .version-btn svg { opacity: .5; flex-shrink: 0; transition: transform .2s; }
+    .version-btn.panel-open svg { transform: rotate(180deg); }
+
+    .btn-feedback {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--accent); color: #fff; border: none;
+      border-radius: 8px; padding: 9px 18px;
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      font-family: inherit; transition: all .15s;
+    }
+    .btn-feedback:hover { background: #6B4E97; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(123,94,167,.28); }
+    .btn-feedback.active { background: #5D3E85; box-shadow: 0 0 0 3px rgba(123,94,167,.22); }
+    .nav-badge {
+      background: #fff; color: var(--accent);
+      border-radius: 999px; font-size: 11px; font-weight: 700;
+      padding: 1px 7px; min-width: 20px; text-align: center; display: none;
+    }
+    .nav-badge.show { display: inline-block; }
+
+    /* ── MAIN ────────────────────────────────────────────── */
+    .main {
+      max-width: 1360px; margin: 0 auto;
+      padding: 0 48px calc(var(--footer-h) + 40px);
+    }
+
+    /* ── KEY ─────────────────────────────────────────────── */
+    .key {
+      display: flex; align-items: center; justify-content: center;
+      gap: 28px; padding: 28px 0 24px;
+    }
+    .key-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-sub); }
+    .key-dot  { width: 6px; height: 22px; border-radius: 3px; flex-shrink: 0; }
+
+    /* ── SECTION LABEL ───────────────────────────────────── */
+    .section-label {
+      text-align: center; margin-bottom: 16px;
+    }
+    .section-label-title {
+      font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 3px;
+    }
+    .section-label-sub {
+      font-size: 12px; color: var(--text-muted);
+    }
+
+    /* ── SITEMAP CARD — white container for utility + main nav ── */
+    .sitemap-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px 28px 32px;
+      margin-bottom: 32px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* ── TILE LAYOUTS ────────────────────────────────────── */
+    .utility-row {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 10px; margin-bottom: 0;
+      align-items: start; /* top-align so tiles expand downward on hover */
+    }
+    .main-nav-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 10px; align-items: start;
+    }
+    .nav-col { display: flex; flex-direction: column; gap: 8px; }
+    .footer-row {
+      display: flex; justify-content: center; margin-bottom: 32px; /* 32px to sunset */
+    }
+    .footer-row .tile { max-width: 860px; width: 100%; }
+    .sunset-section {
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+    }
+    .sunset-label-wrap { display: flex; justify-content: center; }
+    .sunset-label-wrap .tile { min-width: 260px; }
+    .sunset-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: 8px; width: 100%;
+    }
+
+    /* ── BASE TILE ───────────────────────────────────────── */
+    .tile {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 20px 24px 26px;  /* generous vertical, 26px left for indicator */
+      position: relative; overflow: hidden;
+      transition: box-shadow .18s, transform .18s, border-color .18s;
+      text-align: center;
+    }
+    /* Left indicator bar */
+    .tile::before {
+      content: '';
+      position: absolute; left: 0; top: 0; bottom: 0; width: 6px;
+      border-radius: var(--radius) 0 0 var(--radius);
+    }
+
+    /* ── SPECIAL: Utility Nav header — borderless label ── */
+    .tile.utility-section-label {
+      background: transparent !important;
+      border-color: transparent !important;
+      box-shadow: none !important;
+      cursor: default;
+      padding-left: 18px;
+    }
+    .tile.utility-section-label::before { display: none; }
+    .tile.utility-section-label:hover   { transform: none !important; box-shadow: none !important; }
+    .tile.utility-section-label .tile-title    { font-size: 15px; font-weight: 700; }
+    .tile.utility-section-label .tile-subtitle { font-size: 12px; font-weight: 400; color: var(--text-muted); }
+
+    /* ── TYPE: colored borders on ALL tiles ──────────────── */
+    .tile[data-type="clinician"] { border-color: rgba(139,125,200,.28); }
+    .tile[data-type="shared"]    { border-color: rgba(91,168,106,.28); }
+    .tile[data-type="client"]    { border-color: rgba(232,156,74,.28); }
+    .tile[data-type="utility"]   { border-color: #e8e8e8; }
+    .tile[data-type="sunset"]    { border-color: rgba(217,122,122,.28); }
+
+    /* ── LABEL TILES — colored fills ─────────────────────── */
+    .tile.is-label[data-type="clinician"] { background: var(--clinician-bg); border-color: #D5CEEF; }
+    .tile.is-label[data-type="shared"]    { background: var(--shared-bg);    border-color: #C0DFBF; }
+    .tile.is-label[data-type="client"]    { background: var(--client-bg);    border-color: #F0D0A0; }
+    .tile.is-label[data-type="sunset"]    { background: var(--sunset-bg);    border-color: #F0C0C0; }
+    .tile.is-label[data-type="utility"]   { background: var(--white); }
+
+    /* ── INDICATOR COLORS ────────────────────────────────── */
+    .tile[data-type="clinician"]::before { background: var(--clinician); }
+    .tile[data-type="shared"]::before    { background: var(--shared); }
+    .tile[data-type="client"]::before    { background: var(--client); }
+    .tile[data-type="utility"]::before   { background: var(--utility); }
+    .tile[data-type="sunset"]::before    { background: var(--sunset); }
+
+    /* ── INTERACTIONS ────────────────────────────────────── */
+    .tile:not(.is-label):not(.utility-section-label) { cursor: pointer; }
+    .tile:not(.is-label):not(.utility-section-label):hover,
+    .tile.hovered:not(.is-label):not(.utility-section-label) {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    .tile.is-label { cursor: default; }
+    .tile.is-label:hover { transform: none; box-shadow: none; }
+
+    /* Comment target ring */
+    .tile.comment-target {
+      border-color: var(--accent) !important;
+      box-shadow: 0 0 0 2.5px rgba(123,94,167,.4) !important;
+      transform: none !important;
+    }
+    /* Has-comments dot */
+    .tile.has-comments::after {
+      content: ''; position: absolute; top: 10px; right: 10px;
+      width: 7px; height: 7px; border-radius: 50%; background: var(--accent);
+    }
+
+    /* Selecting-mode */
+    body.selecting-tile .tile:not(.is-label):not(.utility-section-label) { cursor: crosshair; }
+    body.selecting-tile .tile:not(.is-label):not(.utility-section-label):hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1.5px rgba(123,94,167,.25);
+    }
+
+    /* ── TILE CONTENT ────────────────────────────────────── */
+    .tile-title    { font-size: 18px; font-weight: 700; line-height: 1.25; margin-bottom: 6px; }
+    .tile-subtitle { font-size: 13px; font-weight: 600; color: var(--text-sub); margin-bottom: 8px; }
+    .tile-desc     { font-size: 13px; color: var(--text-sub); line-height: 1.65; }
+
+    /* Clamped by default */
+    .tile:not(.hovered):not(.locked) .tile-desc {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .tile.hovered .tile-desc,
+    .tile.locked  .tile-desc { display: block; overflow: visible; }
+
+    /* Expand hint — absolute top-right, no layout impact */
+    .tile-hint {
+      position: absolute; top: 13px; right: 14px;
+      font-size: 11px; color: var(--text-muted);
+      opacity: 0; transition: opacity .15s;
+      pointer-events: none; white-space: nowrap;
+    }
+    .tile:not(.is-label):not(.utility-section-label):hover .tile-hint,
+    .tile.hovered .tile-hint,
+    .tile.locked  .tile-hint { opacity: 1; }
+
+    /* ── OVERLAY (version panel only) ────────────────────── */
+    .overlay {
+      position: fixed; inset: 0; background: rgba(10,10,30,.18);
+      z-index: 200; opacity: 0; pointer-events: none; transition: opacity .2s;
+    }
+    .overlay.show { opacity: 1; pointer-events: all; }
+
+    /* ── VERSION PANEL ───────────────────────────────────── */
+    .version-panel {
+      position: fixed; top: 70px; right: 16px;
+      width: 500px; background: var(--white);
+      border: 1px solid var(--border); border-radius: 14px;
+      box-shadow: var(--shadow-lg); z-index: 201; overflow: hidden;
+      opacity: 0; pointer-events: none; transform: translateY(-8px);
+      transition: opacity .18s, transform .18s;
+    }
+    .version-panel.open { opacity: 1; pointer-events: all; transform: translateY(0); }
+    .vp-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 20px; border-bottom: 1px solid var(--border);
+    }
+    .vp-header h3 { font-size: 14px; font-weight: 700; }
+    .icon-btn {
+      background: none; border: none; cursor: pointer; color: var(--text-muted);
+      padding: 5px; border-radius: 6px; display: flex; align-items: center;
+      font-family: inherit; transition: all .15s;
+    }
+    .icon-btn:hover { background: var(--bg); color: var(--text); }
+    .vp-list { max-height: 300px; overflow-y: auto; }
+    .version-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 13px 20px; border-bottom: 1px solid var(--border);
+      transition: background .12s;
+    }
+    .version-row:last-child { border-bottom: none; }
+    .version-row:hover { background: var(--bg); }
+    .version-row.active { background: rgba(123,94,167,.05); }
+    .vr-left { display: flex; flex-direction: column; gap: 3px; }
+    .vr-name { font-size: 14px; font-weight: 700; }
+    .vr-changelog { font-size: 12px; color: var(--text-muted); }
+    .vr-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .vr-count { font-size: 12px; color: var(--text-muted); }
+    .vr-badge { background: var(--accent); color: #fff; font-size: 10px; font-weight: 700; padding: 2px 9px; border-radius: 999px; }
+    .vr-switch-btn {
+      font-size: 11px; color: var(--accent); background: var(--accent-light);
+      border: none; border-radius: 5px; padding: 4px 10px;
+      cursor: pointer; font-family: inherit; font-weight: 600; transition: all .12s;
+    }
+    .vr-switch-btn:hover { background: rgba(123,94,167,.2); }
+    .vr-delete-btn {
+      font-size: 11px; color: #C0392B; background: #FEE9E7;
+      border: none; border-radius: 5px; padding: 4px 10px;
+      cursor: pointer; font-family: inherit; font-weight: 600; transition: all .12s;
+    }
+    .vr-delete-btn:hover { background: #FCD4CF; }
+    .new-version-form {
+      padding: 16px 20px; border-top: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .nv-title { font-size: 12px; font-weight: 700; color: var(--text-sub); }
+    .nv-row { display: flex; gap: 8px; }
+    .nv-input {
+      flex: 1; border: 1px solid var(--border); border-radius: 8px;
+      padding: 9px 12px; font-family: inherit; font-size: 13px;
+      color: var(--text); outline: none; background: var(--bg); transition: border-color .15s;
+    }
+    .nv-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(123,94,167,.1); }
+    .nv-input::placeholder { color: var(--text-muted); }
+    .nv-name { width: 90px; flex: none; }
+    .btn-create {
+      background: var(--accent); color: #fff; border: none; border-radius: 8px;
+      padding: 9px 18px; font-size: 13px; font-weight: 600; cursor: pointer;
+      font-family: inherit; transition: all .15s; align-self: flex-end;
+    }
+    .btn-create:hover { background: #6B4E97; }
+
+    /* ── VIEWING BANNER ──────────────────────────────────── */
+    .viewing-banner {
+      position: sticky; top: 70px; z-index: 90;
+      background: #FEF9EC; border-bottom: 1px solid #FDDEA0;
+      padding: 10px 48px; font-size: 13px; color: #8A5F0A;
+      display: none; align-items: center; gap: 10px;
+    }
+    .viewing-banner.show { display: flex; }
+    .viewing-banner strong { font-weight: 700; }
+    .viewing-banner button {
+      margin-left: auto; font-size: 12px; font-weight: 600;
+      color: var(--accent); background: none; border: none; cursor: pointer; font-family: inherit;
+    }
+
+    /* ── FLOATING FEEDBACK WINDOW ────────────────────────── */
+    .feedback-window {
+      position: fixed;
+      bottom: calc(var(--footer-h) + 16px); right: 24px;
+      width: 360px; max-height: 560px;
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 14px; box-shadow: var(--shadow-lg);
+      z-index: 300; display: flex; flex-direction: column;
+      opacity: 0; pointer-events: none;
+      transform: scale(.97) translateY(6px);
+      transition: opacity .2s, transform .2s;
+      overflow: hidden;
+    }
+    .feedback-window.open { opacity: 1; pointer-events: all; transform: scale(1) translateY(0); }
+    .feedback-window.minimized .fw-body,
+    .feedback-window.minimized .fw-footer { display: none; }
+    .feedback-window.dragging { transition: none; box-shadow: 0 16px 48px rgba(0,0,0,.18); }
+
+    /* Handle */
+    .fw-handle {
+      display: flex; align-items: center; gap: 10px; padding: 14px 16px;
+      border-bottom: 1px solid var(--border); cursor: grab; flex-shrink: 0;
+      background: var(--white); border-radius: 14px 14px 0 0; user-select: none;
+    }
+    .feedback-window.minimized .fw-handle { border-bottom: none; border-radius: 14px; }
+    .fw-handle:active { cursor: grabbing; }
+    .fw-handle-title { display: flex; align-items: center; gap: 8px; flex: 1; font-size: 14px; font-weight: 700; }
+    .fw-window-badge {
+      background: var(--accent); color: #fff;
+      border-radius: 999px; font-size: 11px; font-weight: 700;
+      padding: 1px 7px; min-width: 20px; text-align: center; display: none;
+    }
+    .fw-window-badge.show { display: inline-block; }
+    .fw-actions { display: flex; gap: 4px; }
+    .fw-btn {
+      background: none; border: none; cursor: pointer; color: var(--text-muted);
+      width: 26px; height: 26px; border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-family: inherit; transition: all .12s; line-height: 1;
+    }
+    .fw-btn:hover { background: var(--bg); color: var(--text); }
+
+    /* Tile hint strip */
+    .fw-tile-hint {
+      padding: 9px 16px; background: var(--accent-light);
+      border-bottom: 1px solid rgba(123,94,167,.15);
+      font-size: 11.5px; color: var(--accent); flex-shrink: 0;
+      display: none; align-items: center; gap: 8px; line-height: 1.4;
+    }
+    .fw-tile-hint.show { display: flex; }
+
+    /* Version strip */
+    .fw-version-strip { padding: 9px 16px; font-size: 12px; flex-shrink: 0; display: none; }
+    .fw-version-strip.show { display: block; }
+    .fw-version-strip.current { background: rgba(123,94,167,.06); color: var(--accent); border-bottom: 1px solid rgba(123,94,167,.12); }
+    .fw-version-strip.readonly { background: #FEF9EC; color: #C47B20; border-bottom: 1px solid rgba(196,123,32,.15); }
+    .fw-version-strip strong { font-weight: 700; }
+    .fw-version-strip p { margin-top: 2px; font-size: 11.5px; opacity: .85; }
+
+    /* Body */
+    .fw-body { flex: 1; overflow-y: auto; padding: 14px 16px; min-height: 0; }
+    .fw-count-label {
+      font-size: 10.5px; font-weight: 700; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: .6px; margin-bottom: 10px; display: block;
+    }
+    .fw-comments { display: flex; flex-direction: column; gap: 8px; }
+    .no-comments { text-align: center; padding: 28px 12px; }
+    .no-comments strong { display: block; font-size: 14px; margin-bottom: 6px; color: var(--text-sub); }
+    .no-comments span   { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
+
+    .comment-card { border: 1px solid var(--border); border-radius: 10px; padding: 11px 12px; background: var(--bg); }
+    .comment-card.on-tile { border-left: 3px solid var(--accent); }
+    .cc-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 6px; }
+    .cc-meta   { display: flex; flex-direction: column; gap: 2px; }
+    .cc-author { font-size: 11.5px; font-weight: 700; }
+    .cc-time   { font-size: 10.5px; color: var(--text-muted); }
+    .cc-right  { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .cc-tag { font-size: 10.5px; background: var(--accent-light); color: var(--accent); padding: 2px 8px; border-radius: 999px; font-weight: 600; }
+    .cc-del { background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 2px 6px; border-radius: 4px; font-size: 11px; font-family: inherit; transition: all .12s; }
+    .cc-del:hover { background: #FEE2E2; color: #DC2626; }
+    .cc-body { font-size: 12px; color: var(--text-sub); line-height: 1.55; }
+
+    /* Feedback footer */
+    .fw-footer { padding: 12px 16px; border-top: 1px solid var(--border); flex-shrink: 0; }
+    .fw-footer.readonly { opacity: .45; pointer-events: none; }
+    .fw-target-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; min-height: 22px; }
+    .fw-target-label { font-size: 11.5px; color: var(--text-muted); }
+    .fw-target-chip {
+      display: none; align-items: center; gap: 5px;
+      background: var(--accent-light); color: var(--accent);
+      border-radius: 999px; font-size: 11px; font-weight: 600;
+      padding: 2px 9px 2px 11px;
+    }
+    .fw-target-chip.show { display: inline-flex; }
+    .fw-target-chip button { background: none; border: none; cursor: pointer; color: var(--accent); font-size: 13px; line-height: 1; padding: 0; opacity: .7; }
+    .fw-target-chip button:hover { opacity: 1; }
+    .fw-select-btn {
+      font-size: 11.5px; color: var(--accent); background: none; border: none;
+      cursor: pointer; padding: 2px 0; font-family: inherit;
+      text-decoration: underline; text-decoration-color: transparent; transition: text-decoration-color .15s;
+    }
+    .fw-select-btn:hover { text-decoration-color: var(--accent); }
+    body.selecting-tile .fw-select-btn { font-weight: 700; text-decoration-color: var(--accent); }
+    .fw-textarea {
+      width: 100%; min-height: 68px; border: 1px solid var(--border); border-radius: 8px;
+      padding: 10px 12px; font-family: inherit; font-size: 12.5px;
+      color: var(--text); resize: vertical; outline: none; background: var(--bg);
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .fw-textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(123,94,167,.1); background: var(--white); }
+    .fw-textarea::placeholder { color: var(--text-muted); }
+    .fw-submit-row { display: flex; align-items: center; justify-content: flex-end; margin-top: 8px; }
+    .fw-author {
+      border: 1px solid var(--border); border-radius: 6px;
+      padding: 6px 10px; font-family: inherit; font-size: 12px;
+      color: var(--text); outline: none; background: var(--bg);
+      width: 100%; margin-bottom: 8px; transition: border-color .15s;
+    }
+    .fw-author:focus { border-color: var(--accent); }
+    .fw-author::placeholder { color: var(--text-muted); }
+    .fw-post {
+      background: var(--accent); color: #fff; border: none; border-radius: 8px;
+      padding: 7px 16px; font-size: 12.5px; font-weight: 600; cursor: pointer;
+      font-family: inherit; transition: all .15s;
+    }
+    .fw-post:hover { background: #6B4E97; }
+
+    /* ── STICKY FOOTER — stats only ──────────────────────── */
+    .site-footer {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      height: var(--footer-h); background: var(--white);
+      border-top: 1px solid var(--border); z-index: 50;
+      display: flex; align-items: center; justify-content: center;
+      padding: 0 48px; gap: 24px;
+    }
+    .sf-stat { display: flex; align-items: center; gap: 8px; }
+    .sf-icon { width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .sf-icon.visitors { background: rgba(90,159,204,.12); }
+    .sf-icon.feedback { background: var(--accent-light); }
+    .sf-info { display: flex; flex-direction: column; }
+    .sf-value { font-size: 15px; font-weight: 700; line-height: 1; }
+    .sf-label { font-size: 10px; color: var(--text-muted); margin-top: 1px; }
+    .sf-divider { width: 1px; height: 28px; background: var(--border); }
+
+    /* ── RESPONSIVE ──────────────────────────────────────── */
+    @media (max-width: 960px) {
+      .main { padding: 0 20px calc(var(--footer-h) + 24px); }
+      .nav, .site-footer, .viewing-banner { padding-left: 20px; padding-right: 20px; }
+      .utility-row, .main-nav-grid { grid-template-columns: repeat(2, 1fr); }
+      .sunset-grid { grid-template-columns: 1fr; }
+      .feedback-window { width: calc(100vw - 32px); right: 16px; }
+      .version-panel { width: calc(100% - 32px); right: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-brand">
+    <span class="nav-brand-name">WorldWide HealthStaff Solutions</span>
+    <span class="nav-brand-sub">Proposed Sitemap</span>
+  </div>
+  <div class="nav-right">
+    <button class="version-btn" id="versionToggle">
+      <span id="currentVersionLabel">v.01</span>
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+        <path d="M2 4.5l4 3 4-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <button class="btn-feedback" id="feedbackToggle">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+        <path d="M2.5 2.5h11a.5.5 0 01.5.5v8a.5.5 0 01-.5.5H5.5l-3.5 3V3a.5.5 0 01.5-.5z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
+      </svg>
+      Feedback
+      <span class="nav-badge" id="navBadge">0</span>
+    </button>
+  </div>
+</nav>
+
+<!-- VIEWING BANNER -->
+<div class="viewing-banner" id="viewingBanner">
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0">
+    <circle cx="8" cy="8" r="6.5" stroke="#8A5F0A" stroke-width="1.4"/>
+    <path d="M8 5v4M8 11v.5" stroke="#8A5F0A" stroke-width="1.4" stroke-linecap="round"/>
+  </svg>
+  Viewing <strong id="viewingVersionLabel">v.01</strong> — read-only.
+  <button id="returnToCurrent">Return to current version →</button>
+</div>
+
+<!-- VERSION PANEL + OVERLAY -->
+<div class="overlay" id="overlay"></div>
+<div class="version-panel" id="versionPanel">
+  <div class="vp-header">
+    <h3>Version History</h3>
+    <button class="icon-btn" id="closeVersionPanel">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
+  <div class="vp-list" id="versionList"></div>
+  <div class="new-version-form">
+    <div class="nv-title">Create new version</div>
+    <div class="nv-row">
+      <input class="nv-input nv-name" id="nvName" placeholder="v.02" />
+      <input class="nv-input" id="nvChangelog" placeholder="Describe what changed…" />
+    </div>
+    <button class="btn-create" id="createVersionBtn">Create Version</button>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+  <!-- Key: Utility first -->
+  <div class="key">
+    <div class="key-item"><div class="key-dot" style="background:var(--utility)"></div> Utility</div>
+    <div class="key-item"><div class="key-dot" style="background:var(--clinician)"></div> Clinician</div>
+    <div class="key-item"><div class="key-dot" style="background:var(--shared)"></div> Shared</div>
+    <div class="key-item"><div class="key-dot" style="background:var(--client)"></div> Client</div>
+    <div class="key-item"><div class="key-dot" style="background:var(--sunset)"></div> Sunset</div>
+  </div>
+  <div id="sitemapContainer"></div>
+</main>
+
+<!-- FLOATING FEEDBACK WINDOW -->
+<div class="feedback-window" id="feedbackWindow">
+  <div class="fw-handle" id="fwHandle">
+    <div class="fw-handle-title">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+        <path d="M2.5 2.5h11a.5.5 0 01.5.5v8a.5.5 0 01-.5.5H5.5l-3.5 3V3a.5.5 0 01.5-.5z" stroke="#7B5EA7" stroke-width="1.5" stroke-linejoin="round"/>
+      </svg>
+      Feedback
+      <span class="fw-window-badge" id="fwBadge">0</span>
+    </div>
+    <div class="fw-actions">
+      <button class="fw-btn" id="fwMinimize" title="Minimize">−</button>
+      <button class="fw-btn" id="fwClose" title="Close">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+          <path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+  <div class="fw-tile-hint" id="fwTileHint">
+    <svg width="13" height="13" viewBox="0 0 14 14" fill="none" style="flex-shrink:0">
+      <circle cx="7" cy="7" r="5.5" stroke="#7B5EA7" stroke-width="1.3"/>
+      <path d="M7 4.5v3.5M7 9.5v.5" stroke="#7B5EA7" stroke-width="1.3" stroke-linecap="round"/>
+    </svg>
+    Click any tile to attach feedback to a specific page.
+  </div>
+  <div class="fw-version-strip" id="fwVersionStrip">
+    <strong id="fwVersionName"></strong>
+    <p id="fwVersionChangelog"></p>
+  </div>
+  <div class="fw-body" id="fwBody">
+    <span class="fw-count-label" id="fwCountLabel">0 comments</span>
+    <div class="fw-comments" id="fwComments"></div>
+  </div>
+  <div class="fw-footer" id="fwFooter">
+    <div class="fw-target-row">
+      <span class="fw-target-label">On:</span>
+      <span class="fw-target-chip" id="fwTargetChip">
+        <span id="fwTargetLabel"></span>
+        <button id="fwClearTarget" title="Clear">×</button>
+      </span>
+      <button class="fw-select-btn" id="fwSelectBtn">select a tile</button>
+    </div>
+    <input class="fw-author" id="fwAuthor" placeholder="Your name" maxlength="40" />
+    <textarea class="fw-textarea" id="fwTextarea" placeholder="Add your feedback…"></textarea>
+    <div class="fw-submit-row">
+      <button class="fw-post" id="fwPost">Post</button>
+    </div>
+  </div>
+</div>
+
+<!-- STICKY FOOTER — stats only -->
+<footer class="site-footer">
+  <div class="sf-stat">
+    <div class="sf-icon visitors">
+      <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+        <circle cx="7.5" cy="6" r="3" stroke="#5A9FCC" stroke-width="1.5"/>
+        <path d="M1.5 17c0-3.314 2.686-6 6-6s6 2.686 6 6" stroke="#5A9FCC" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="14.5" cy="6.5" r="2.3" stroke="#5A9FCC" stroke-width="1.3"/>
+        <path d="M17 16c0-2.2-1.12-3.9-2.5-4.5" stroke="#5A9FCC" stroke-width="1.3" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="sf-info">
+      <span class="sf-value" id="sfVisitors">1</span>
+      <span class="sf-label">Unique Visitors</span>
+    </div>
+  </div>
+  <div class="sf-divider"></div>
+  <div class="sf-stat">
+    <div class="sf-icon feedback">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+        <path d="M2.5 2.5h11a.5.5 0 01.5.5v8a.5.5 0 01-.5.5H5.5l-3.5 3V3a.5.5 0 01.5-.5z" stroke="#7B5EA7" stroke-width="1.5" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="sf-info">
+      <span class="sf-value" id="sfFeedback">0</span>
+      <span class="sf-label">Feedback Items</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  SITEMAP DATA
+// ═══════════════════════════════════════════════════════════
+
+const SITEMAP = [
+  {
+    id: 'utility-nav', layout: 'utility-row',
+    tiles: [
+      // Utility Nav is a borderless section label (not a boxed tile)
+      { id: 'utility-nav-header', type: 'utility', isLabel: true, isUtilityHeader: true,
+        title: 'Utility Nav', subtitle: 'Lives above main nav, disappears while scrolling down' },
+      { id: 'contact-us', type: 'utility', title: 'Contact Us',
+        desc: 'A high-intent destination currently offering only a phone number, email, and address. Rebuilt with a structured recruiter contact form and a clear audience designation routing nurses and employers to their respective next steps.' },
+      { id: 'live-chat', type: 'utility', title: 'Live Chat',
+        desc: "The best engagement metrics of any page in the audit outside of blog content. Initially flagged for sunset, confirmed staying. Moves to the utility nav so it's persistently accessible from every page without occupying primary nav real estate." },
+      { id: 'log-in', type: 'utility', title: 'Log In',
+        desc: 'Persistent utility nav item for returning candidates accessing their portal.' }
+    ]
+  },
+  {
+    id: 'main-nav', layout: 'main-nav-grid',
+    sectionLabel: { title: 'Main Nav', subtitle: 'Universal navigation structure across the site' },
+    columns: [
+      {
+        id: 'col-nurse',
+        tiles: [
+          { id: 'work-as-nurse-label', type: 'clinician', isLabel: true, title: 'Work as a Nurse', subtitle: 'Dropdown menu' },
+          { id: 'registered-nurses', type: 'clinician', title: 'Registered Nurses', subtitle: 'Primary landing page.',
+            desc: "The highest-traffic page on the site is losing 87% of visitors, the content introduces WWHS rather than answering what a nurse actually needs to know. Reformat focused on the candidate's question, with trust signals and CTAs placed where intent is highest." },
+          { id: 'allied-professionals', type: 'clinician', title: 'Allied Professionals',
+            desc: 'Allied professionals have different roles, requirements, and career concerns than RNs. Maintains its own dedicated page.' },
+          { id: 'middle-east-careers', type: 'clinician', title: 'Middle East Careers',
+            desc: 'Solid page with moderate engagement but confirmed as a low business priority with promotion paused. Stays in the nav pending WWHS future decisions.' },
+          { id: 'specialty-pathways', type: 'clinician', title: 'Specialty Pathways',
+            desc: 'Dialysis RN and OPT nursing students are distinct audiences with different eligibility and timelines, currently buried as tabs that most users never discover. Elevated so candidates can easily self-identify.' },
+          { id: 'refer-a-nurse', type: 'clinician', title: 'Refer a Nurse',
+            desc: 'Exists as three separate pages across two platforms, fragmenting the experience and splitting traffic. Consolidated into one page built on the WordPress version, which already dominates with 9,330 sessions.' },
+          { id: 'nurse-stories', type: 'clinician', title: 'Nurse Stories',
+            desc: "Individual spotlight pages are generating 80–97% bounce rates with under 32 seconds engagement, the standalone format isn't working. Three strategic options presented to give WWHS flexibility based on where their content investment goes next." }
+        ]
+      },
+      {
+        id: 'col-how',
+        tiles: [
+          { id: 'how-it-works-label', type: 'clinician', isLabel: true, title: 'How it Works', subtitle: 'Dropdown menu' },
+          { id: 'candidate-journey', type: 'clinician', title: 'Candidate Journey',
+            desc: "Good engagement time from users who find it, but almost nobody does, it's low traffic, hard to discover, and ends without a clear next step. Needs to become a CTA-driven anchor page that earns its place as the centerpiece of the clinician experience." },
+          { id: 'visa-options', type: 'clinician', title: 'Visa Options',
+            desc: "Renamed from Visa Pathways to remove ambiguity, users arriving on this page weren't sure if it explained how to get a visa or listed visa types. Moved under How It Works where it belongs as a process page, not a career opportunity." },
+          { id: 'direct-hire-explained', type: 'clinician', title: 'Direct Hire Explained',
+            desc: 'Strategically important but currently written for the employer, not the candidate. Rebuilt to answer the question a nurse actually has, "what does direct hire mean for my job security and my future in the US?"' },
+          { id: 'candidate-support', type: 'clinician', title: 'Candidate Support',
+            desc: 'Renamed from Candidate Success Services, a label that means nothing to an international nurse, and rebuilt around who will help, when, and what that support looks like in practice rather than a catalog of services.' },
+          { id: 'nclex-hub-how', type: 'clinician', title: 'NCLEX Hub',
+            desc: "Five fragmented NCLEX pages, including the site's single highest-traffic page, now inactive, are splitting authority and sending users to dead ends. Consolidated into one authoritative page with all legacy URLs redirecting there." },
+          { id: 'visa-bulletin-how', type: 'clinician', title: 'Visa Bulletin',
+            desc: "The site's best-performing page by retention, 33% bounce, 1,270 engaged sessions, kept exactly as-is with one addition: a contextual next step for users who check their dates and are ready to act." }
+        ]
+      },
+      {
+        id: 'col-resources',
+        tiles: [
+          { id: 'resources-label', type: 'shared', isLabel: true, title: 'Resources', subtitle: 'Dropdown menu' },
+          { id: 'nclex-hub-res', type: 'shared', title: 'NCLEX Hub',
+            desc: "Five fragmented NCLEX pages, including the site's single highest-traffic page, now inactive, are splitting authority and sending users to dead ends. Consolidated into one authoritative page with all legacy URLs redirecting there." },
+          { id: 'visa-bulletin-res', type: 'shared', title: 'Visa Bulletin',
+            desc: "The site's best-performing page by retention, 33% bounce, 1,270 engaged sessions, kept exactly as-is with one addition: a contextual next step for users who check their dates and are ready to act." },
+          { id: 'blog', type: 'shared', title: 'Blog',
+            desc: "The site's strongest acquisition channel by engagement metrics, currently with no taxonomy, no internal links to static pages, and no CTA strategy. Adding structure and conversion pathways turns the site's best traffic source into a conversion engine." },
+          { id: 'relocation-hub', type: 'shared', title: 'Relocation Hub',
+            desc: "Ten newly published relocation guides exist with no home, no internal links pointing to them, and no connection to the Candidate Journey where they're most relevant. A new hub page gives them structure and connects them to the right moment in the process." },
+          { id: 'green-card', type: 'shared', title: 'Green Card Sponsorship',
+            desc: '3,146 sessions of high-intent organic traffic on the WordPress site, too valuable to casually redirect.' },
+          { id: 'about-wwhs', type: 'shared', title: 'About WWHS',
+            desc: "Currently 80% bounce, it exists but isn't doing trust-building work. Rebuilt around the signals this audience actually looks for: years in business, credentials, certifications, and named people." }
+        ]
+      },
+      {
+        id: 'col-employers',
+        tiles: [
+          { id: 'for-employers-label', type: 'client', isLabel: true, title: 'For Employers', subtitle: 'Dropdown menu' },
+          { id: 'direct-hire-employers', type: 'client', title: 'Direct Hire for Employers', subtitle: 'Primary employer landing page.',
+            desc: 'The employer audience converts through relationships and direct outreach, not a content journey, this page needs to do one job cleanly: explain the direct hire model and get a facility to request a conversation. One page, one CTA.' },
+          { id: 'sectors-served', type: 'client', title: 'Sectors Served',
+            desc: 'Brief supporting context for employers evaluating fit, hospital types, long-term care, specialty facilities. Exists to answer "do you work with facilities like mine" without overcomplicating the employer experience.' },
+          { id: 'candidate-visa-types', type: 'client', title: 'Candidate & Visa Types',
+            desc: "Answers the employer's practical question, what kinds of professionals does WWHS place and through which visa categories? Supporting page, not a conversion destination." },
+          { id: 'schedule-meeting', type: 'client', title: 'Schedule a Meeting',
+            desc: 'The primary employer conversion action. Currently exists on the WordPress site, kept and promoted as the anchor CTA for the entire employer section.' }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'footer-section', layout: 'footer-row',
+    tiles: [
+      { id: 'footer', type: 'utility', title: 'Footer',
+        desc: 'Privacy Policy, Terms of Use, and legal copy live here only, no nav presence needed. Also the natural home for trust credentials (CGFNS, AAIHR), years in business, and social links. Handles the legal and brand baseline without cluttering the primary experience.' }
+    ]
+  },
+  {
+    id: 'sunset-section', layout: 'sunset-section',
+    label: { id: 'sunset-label', type: 'sunset', isLabel: true, title: 'Sunset', subtitle: 'Pages to remove from sitemap' },
+    tiles: [
+      { id: 'nurse-spotlight-pages', type: 'sunset', title: 'Nurse Spotlight pages', subtitle: '16 Wordpress pages',
+        desc: "Duplicate versions of the Shazamme spotlight content with negligible traffic across all 16 pages. The standalone format isn't working regardless of platform, all sunset pending the outcome of the nurse stories strategy decision." },
+      { id: 'covid-era-content', type: 'sunset', title: 'COVID-era content', subtitle: '8 posts',
+        desc: 'Pandemic-specific posts covering vaccine requirements, travel bans, COVID nursing visas, NCLEX during COVID, and direct hire during coronavirus. All outdated with near-zero traffic and no forward-looking value.' },
+      { id: 'time-bound-policy', type: 'sunset', title: 'Time-bound policy & political content', subtitle: '7 posts',
+        desc: 'Biden administration immigration pieces, DACA deadline, merit-based legislation, and a 2020 visa bulletin update. All relevant at a specific moment, none relevant now.' },
+      { id: 'dated-employer-content', type: 'sunset', title: 'Dated employer blog content', subtitle: '4 posts',
+        desc: '2019 staffing challenges, recruitment misdiagnosis, nursing shortage framing, and a recruitment innovation post, outdated angles, minimal traffic, no alignment with current strategy.' },
+      { id: 'legacy-forms', type: 'sunset', title: 'Legacy forms & utility pages', subtitle: '4 pages',
+        desc: 'Client Presentation Guide, GCC Client Presentation Guide, and the old sitemap page are obsolete. The Contact Healthstaff WordPress legacy page has 2,051 sessions and requires a 301 redirect to the new Contact Us page at launch, the only sunset page with meaningful traffic.' },
+      { id: 'nurse-spotlight-hub', type: 'sunset', title: 'Nurse Spotlight hub',
+        desc: 'Parent spotlight hub page flagged as duplicative of the Shazamme version. Sunset alongside individual spotlight pages pending the nurse stories strategy decision.' }
+    ]
+  }
+];
+
+// ═══════════════════════════════════════════════════════════
+//  STORAGE
+// ═══════════════════════════════════════════════════════════
+
+const STORAGE_KEY = 'wwhs-sitemap-v7';
+const STATS_KEY   = 'wwhs-stats-v2';
+const VISITOR_KEY = 'wwhs-visitor-id';
+
+function loadStorage() {
+  try { const r = localStorage.getItem(STORAGE_KEY); if (r) return JSON.parse(r); } catch(e) {}
+  return {
+    currentVersion: 'v.01',
+    versions: { 'v.01': { name:'v.01', date: new Date().toISOString(), changelog:'Initial proposed sitemap.', comments:[] } }
+  };
+}
+function saveStorage() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state.storage)); }
+
+function loadStats() {
+  try { const r = localStorage.getItem(STATS_KEY); if (r) return JSON.parse(r); } catch(e) {}
+  return { visitors: [] };
+}
+function saveStats() { localStorage.setItem(STATS_KEY, JSON.stringify(globalStats)); }
+
+function initVisitor() {
+  let id = localStorage.getItem(VISITOR_KEY);
+  if (!id) { id = 'v' + Date.now() + '_' + Math.random().toString(36).substr(2,8); localStorage.setItem(VISITOR_KEY, id); }
+  if (!globalStats.visitors.includes(id)) { globalStats.visitors.push(id); saveStats(); }
+}
+
+function getTotalFeedback() {
+  return Object.values(state.storage.versions).reduce((s,v) => s + (v.comments?.length||0), 0);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════════
+
+const globalStats = loadStats();
+
+const state = {
+  windowOpen:     false,
+  versionOpen:    false,
+  minimized:      false,
+  selectingTile:  false,
+  commentTarget:  null,
+  viewingVersion: null,
+  storage:        loadStorage()
+};
+
+const cur  = () => state.storage.currentVersion;
+const view = () => state.viewingVersion || cur();
+const isCur= () => view() === cur();
+const vd   = (v) => state.storage.versions[v != null ? v : view()];
+const cmts = (v) => vd(v)?.comments || [];
+
+// ═══════════════════════════════════════════════════════════
+//  TILE BUILDER
+// ═══════════════════════════════════════════════════════════
+
+function makeTile(tile) {
+  const el = document.createElement('div');
+  const isUtilityHeader = tile.isUtilityHeader;
+  el.className = 'tile' + (tile.isLabel ? ' is-label' : '') + (isUtilityHeader ? ' utility-section-label' : '');
+  el.dataset.tileId = tile.id;
+  el.setAttribute('data-type', tile.type);
+
+  let html = `<div class="tile-title">${tile.title}</div>`;
+  if (tile.subtitle) html += `<div class="tile-subtitle">${tile.subtitle}</div>`;
+
+  const hasDesc = !tile.isLabel && tile.desc;
+  if (hasDesc) {
+    html += `<div class="tile-desc">${tile.desc}</div>`;
+    html += `<div class="tile-hint"><span class="hint-text">Click to pin</span></div>`;
+  }
+  el.innerHTML = html;
+
+  if (!tile.isLabel && !isUtilityHeader) {
+    el.addEventListener('mouseenter', () => {
+      if (hasDesc) el.classList.add('hovered');
+    });
+    el.addEventListener('mouseleave', () => el.classList.remove('hovered'));
+
+    el.addEventListener('click', (e) => {
+      if (state.selectingTile) {
+        e.stopPropagation();
+        setTarget({ id: tile.id, title: tile.title });
+        endSelecting();
+        return;
+      }
+      if (state.windowOpen) {
+        e.stopPropagation();
+        if (state.commentTarget?.id === tile.id) {
+          clearTarget();
+        } else {
+          setTarget({ id: tile.id, title: tile.title });
+          if (hasDesc) { el.classList.add('locked'); const h = el.querySelector('.hint-text'); if (h) h.textContent = 'Click to unpin'; }
+        }
+        return;
+      }
+      if (!hasDesc) return; // label-only tiles don't expand
+      const locked = el.classList.toggle('locked');
+      const hint = el.querySelector('.hint-text');
+      if (hint) hint.textContent = locked ? 'Click to unpin' : 'Click to pin';
+    });
+  }
+  return el;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  RENDER SITEMAP
+// ═══════════════════════════════════════════════════════════
+
+function renderSitemap() {
+  const c = document.getElementById('sitemapContainer');
+  c.innerHTML = '';
+
+  SITEMAP.forEach(s => {
+    if (s.layout === 'utility-row') {
+      const card = document.createElement('div'); card.className = 'sitemap-card';
+      const row = document.createElement('div'); row.className = 'utility-row';
+      s.tiles.forEach(t => row.appendChild(makeTile(t)));
+      card.appendChild(row);
+      c.appendChild(card);
+
+    } else if (s.layout === 'main-nav-grid') {
+      const card = document.createElement('div'); card.className = 'sitemap-card';
+      if (s.sectionLabel) {
+        const lbl = document.createElement('div'); lbl.className = 'section-label';
+        lbl.innerHTML = `<div class="section-label-title">${s.sectionLabel.title}</div><div class="section-label-sub">${s.sectionLabel.subtitle}</div>`;
+        card.appendChild(lbl);
+      }
+      const grid = document.createElement('div'); grid.className = 'main-nav-grid';
+      s.columns.forEach(col => {
+        const colEl = document.createElement('div'); colEl.className = 'nav-col';
+        col.tiles.forEach(t => colEl.appendChild(makeTile(t)));
+        grid.appendChild(colEl);
+      });
+      card.appendChild(grid);
+      c.appendChild(card);
+
+    } else if (s.layout === 'footer-row') {
+      const row = document.createElement('div'); row.className = 'footer-row';
+      s.tiles.forEach(t => row.appendChild(makeTile(t)));
+      c.appendChild(row);
+
+    } else if (s.layout === 'sunset-section') {
+      const wrap = document.createElement('div'); wrap.className = 'sunset-section';
+      const lw = document.createElement('div'); lw.className = 'sunset-label-wrap';
+      lw.appendChild(makeTile(s.label)); wrap.appendChild(lw);
+      const grid = document.createElement('div'); grid.className = 'sunset-grid';
+      s.tiles.forEach(t => grid.appendChild(makeTile(t)));
+      wrap.appendChild(grid); c.appendChild(wrap);
+    }
+  });
+
+  refreshDots();
+}
+
+function refreshDots() {
+  document.querySelectorAll('.tile').forEach(el => el.classList.remove('has-comments'));
+  cmts(cur()).forEach(c => {
+    if (c.tileId) {
+      const el = document.querySelector(`[data-tile-id="${c.tileId}"]`);
+      if (el) el.classList.add('has-comments');
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+//  FEEDBACK WINDOW
+// ═══════════════════════════════════════════════════════════
+
+const fw = document.getElementById('feedbackWindow');
+
+function openWindow() {
+  state.windowOpen = true;
+  fw.classList.add('open');
+  if (state.minimized) { state.minimized = false; fw.classList.remove('minimized'); document.getElementById('fwMinimize').textContent = '−'; }
+  document.getElementById('feedbackToggle').classList.add('active');
+  document.getElementById('fwTileHint').classList.add('show');
+  renderFeedback();
+}
+
+function closeWindow() {
+  state.windowOpen = false;
+  fw.classList.remove('open');
+  document.getElementById('feedbackToggle').classList.remove('active');
+  document.getElementById('fwTileHint').classList.remove('show');
+  endSelecting(); clearTarget();
+}
+
+function toggleMinimize() {
+  state.minimized = !state.minimized;
+  fw.classList.toggle('minimized', state.minimized);
+  document.getElementById('fwMinimize').textContent = state.minimized ? '+' : '−';
+}
+
+function renderFeedback() {
+  const data     = vd(view());
+  const comments = data?.comments || [];
+  const readonly = !isCur();
+
+  const strip = document.getElementById('fwVersionStrip');
+  if (data?.changelog) {
+    strip.className = 'fw-version-strip show ' + (readonly ? 'readonly' : 'current');
+    document.getElementById('fwVersionName').textContent      = data.name + (readonly ? ' (read-only)' : ' (current)');
+    document.getElementById('fwVersionChangelog').textContent  = data.changelog;
+  } else { strip.className = 'fw-version-strip'; }
+
+  document.getElementById('fwFooter').classList.toggle('readonly', readonly);
+
+  const cnt = comments.length;
+  document.getElementById('fwCountLabel').textContent = cnt === 1 ? '1 comment' : `${cnt} comments`;
+
+  const list = document.getElementById('fwComments'); list.innerHTML = '';
+  if (cnt === 0) {
+    list.innerHTML = `<div class="no-comments"><strong>No feedback yet</strong><span>${readonly ? 'No comments were left on this version.' : 'Post a general note or click a tile to target a specific page.'}</span></div>`;
+    return;
+  }
+  [...comments].reverse().forEach(c => {
+    const card = document.createElement('div');
+    card.className = 'comment-card' + (c.tileId ? ' on-tile' : '');
+    const t = new Date(c.timestamp);
+    const ts = t.toLocaleDateString('en-US',{month:'short',day:'numeric'}) + ' · ' +
+               t.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+    card.innerHTML = `
+      <div class="cc-top">
+        <div class="cc-meta"><span class="cc-author">${esc(c.author||'Anonymous')}</span><span class="cc-time">${ts}</span></div>
+        <div class="cc-right">
+          ${c.tileName ? `<span class="cc-tag">${esc(c.tileName)}</span>` : ''}
+          ${!readonly ? `<button class="cc-del" data-id="${c.id}">Remove</button>` : ''}
+        </div>
+      </div>
+      <div class="cc-body">${esc(c.text)}</div>`;
+    card.querySelector('.cc-del')?.addEventListener('click', () => deleteComment(c.id));
+    list.appendChild(card);
+  });
+}
+
+function deleteComment(id) {
+  vd(cur()).comments = vd(cur()).comments.filter(c => c.id !== id);
+  saveStorage(); renderFeedback(); updateBadges(); updateFooter(); refreshDots();
+}
+
+function postComment() {
+  const text = document.getElementById('fwTextarea').value.trim();
+  if (!text) return;
+  vd(cur()).comments.push({
+    id: 'c_' + Date.now(),
+    tileId:   state.commentTarget?.id    || null,
+    tileName: state.commentTarget?.title || null,
+    text, author: document.getElementById('fwAuthor').value.trim() || 'Anonymous',
+    timestamp: new Date().toISOString()
+  });
+  saveStorage();
+  document.getElementById('fwTextarea').value = '';
+  clearTarget(); renderFeedback(); updateBadges(); updateFooter(); refreshDots();
+  document.getElementById('fwBody').scrollTop = 0;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  TILE TARGETING
+// ═══════════════════════════════════════════════════════════
+
+function setTarget(target) {
+  state.commentTarget = target;
+  document.getElementById('fwTargetLabel').textContent = target.title;
+  document.getElementById('fwTargetChip').classList.add('show');
+  document.getElementById('fwSelectBtn').textContent = 'change tile';
+  document.querySelectorAll('.tile.comment-target').forEach(el => el.classList.remove('comment-target'));
+  const el = document.querySelector(`[data-tile-id="${target.id}"]`);
+  if (el) { el.classList.add('comment-target'); el.scrollIntoView({ behavior:'smooth', block:'nearest' }); }
+}
+
+function clearTarget() {
+  state.commentTarget = null;
+  document.getElementById('fwTargetChip').classList.remove('show');
+  document.getElementById('fwSelectBtn').textContent = 'select a tile';
+  document.querySelectorAll('.tile.comment-target').forEach(el => el.classList.remove('comment-target'));
+}
+
+function startSelecting() { state.selectingTile = true; document.body.classList.add('selecting-tile'); }
+function endSelecting()   { state.selectingTile = false; document.body.classList.remove('selecting-tile'); }
+
+// ═══════════════════════════════════════════════════════════
+//  VERSION PANEL
+// ═══════════════════════════════════════════════════════════
+
+function openVersionPanel() {
+  state.versionOpen = true;
+  document.getElementById('versionPanel').classList.add('open');
+  document.getElementById('overlay').classList.add('show');
+  document.getElementById('versionToggle').classList.add('panel-open');
+  renderVersionList(); suggestNext();
+}
+function closeVersionPanel() {
+  state.versionOpen = false;
+  document.getElementById('versionPanel').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+  document.getElementById('versionToggle').classList.remove('panel-open');
+}
+
+function renderVersionList() {
+  const list = document.getElementById('versionList'); list.innerHTML = '';
+  Object.values(state.storage.versions)
+    .sort((a,b) => new Date(b.date)-new Date(a.date))
+    .forEach(v => {
+      const isCurrent = v.name === cur();
+      const isViewing = v.name === view();
+      const count     = v.comments.length;
+      const row = document.createElement('div');
+      row.className = 'version-row' + (isViewing ? ' active' : '');
+      row.innerHTML = `
+        <div class="vr-left">
+          <span class="vr-name">${esc(v.name)}</span>
+          <span class="vr-changelog">${esc(v.changelog||'')}</span>
+        </div>
+        <div class="vr-right">
+          <span class="vr-count">${count} ${count===1?'comment':'comments'}</span>
+          ${isCurrent
+            ? '<span class="vr-badge">Current</span>'
+            : `<button class="vr-switch-btn" data-v="${esc(v.name)}">View</button>
+               <button class="vr-delete-btn" data-v="${esc(v.name)}">Delete</button>`}
+        </div>`;
+      row.querySelector('.vr-switch-btn')?.addEventListener('click', e => { e.stopPropagation(); switchVersion(v.name); });
+      row.querySelector('.vr-delete-btn')?.addEventListener('click', e => { e.stopPropagation(); deleteVersion(v.name); });
+      list.appendChild(row);
+    });
+}
+
+function deleteVersion(name) {
+  if (name === cur()) return;
+  if (!confirm(`Delete "${name}"? This will permanently remove ${vd(name).comments.length} comment(s).`)) return;
+  delete state.storage.versions[name];
+  if (state.viewingVersion === name) { state.viewingVersion = null; hideBanner(); if (state.windowOpen) renderFeedback(); }
+  saveStorage(); renderVersionList(); updateFooter();
+}
+
+function suggestNext() {
+  const max = Object.keys(state.storage.versions).reduce((m,v) => { const n=parseInt(v.replace(/\D/g,'')); return isNaN(n)?m:Math.max(m,n); }, 0);
+  document.getElementById('nvName').placeholder = `v.${String(max+1).padStart(2,'0')}`;
+  document.getElementById('nvName').value = ''; document.getElementById('nvChangelog').value = '';
+}
+
+function createVersion() {
+  let name = document.getElementById('nvName').value.trim() || document.getElementById('nvName').placeholder;
+  const changelog = document.getElementById('nvChangelog').value.trim();
+  if (state.storage.versions[name]) { alert(`"${name}" already exists.`); return; }
+  state.storage.versions[name] = { name, date: new Date().toISOString(), changelog: changelog||`Created ${name}`, comments:[] };
+  state.storage.currentVersion = name;
+  state.viewingVersion = null;
+  saveStorage(); hideBanner(); updateVersionLabel(); updateBadges(); updateFooter();
+  renderVersionList(); if (state.windowOpen) renderFeedback(); suggestNext();
+}
+
+function switchVersion(name) {
+  state.viewingVersion = name === cur() ? null : name;
+  name === cur() ? hideBanner() : showBanner(name);
+  closeVersionPanel(); if (state.windowOpen) renderFeedback();
+}
+
+function showBanner(n) { document.getElementById('viewingVersionLabel').textContent = n; document.getElementById('viewingBanner').classList.add('show'); }
+function hideBanner()  { document.getElementById('viewingBanner').classList.remove('show'); }
+
+// ═══════════════════════════════════════════════════════════
+//  BADGES + FOOTER
+// ═══════════════════════════════════════════════════════════
+
+function updateBadges() {
+  const n = cmts(cur()).length;
+  [document.getElementById('navBadge'), document.getElementById('fwBadge')].forEach(b => {
+    b.textContent = n; b.classList.toggle('show', n > 0);
+  });
+}
+
+function updateVersionLabel() {
+  document.getElementById('currentVersionLabel').textContent = cur();
+}
+
+function updateFooter() {
+  document.getElementById('sfVisitors').textContent = globalStats.visitors.length;
+  document.getElementById('sfFeedback').textContent = getTotalFeedback();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  DRAGGABLE FEEDBACK WINDOW
+// ═══════════════════════════════════════════════════════════
+
+(function initDrag() {
+  const handle = document.getElementById('fwHandle');
+  let dragging = false, startX, startY, origLeft, origTop;
+
+  function begin(cx, cy) {
+    dragging = true; fw.classList.add('dragging');
+    const r = fw.getBoundingClientRect();
+    startX = cx; startY = cy; origLeft = r.left; origTop = r.top;
+    fw.style.right = 'auto'; fw.style.bottom = 'auto';
+    fw.style.left = origLeft + 'px'; fw.style.top = origTop + 'px';
+  }
+  function move(cx, cy) {
+    if (!dragging) return;
+    const nx = Math.max(0, Math.min(window.innerWidth  - fw.offsetWidth,  origLeft + (cx - startX)));
+    const ny = Math.max(0, Math.min(window.innerHeight - fw.offsetHeight, origTop  + (cy - startY)));
+    fw.style.left = nx + 'px'; fw.style.top = ny + 'px';
+  }
+  function end() { dragging = false; fw.classList.remove('dragging'); }
+
+  handle.addEventListener('mousedown', e => { if (e.target.closest('button')) return; begin(e.clientX, e.clientY); e.preventDefault(); });
+  document.addEventListener('mousemove', e => move(e.clientX, e.clientY));
+  document.addEventListener('mouseup', end);
+
+  handle.addEventListener('touchstart', e => {
+    if (e.target.closest('button')) return;
+    const t = e.touches[0]; begin(t.clientX, t.clientY); e.preventDefault();
+  }, { passive: false });
+  document.addEventListener('touchmove', e => {
+    if (!dragging) return; move(e.touches[0].clientX, e.touches[0].clientY); e.preventDefault();
+  }, { passive: false });
+  document.addEventListener('touchend', end);
+})();
+
+// ═══════════════════════════════════════════════════════════
+//  EVENT WIRING
+// ═══════════════════════════════════════════════════════════
+
+document.getElementById('feedbackToggle').addEventListener('click', () => state.windowOpen ? closeWindow() : openWindow());
+document.getElementById('fwClose').addEventListener('click', closeWindow);
+document.getElementById('fwMinimize').addEventListener('click', toggleMinimize);
+document.getElementById('versionToggle').addEventListener('click', e => { e.stopPropagation(); state.versionOpen ? closeVersionPanel() : openVersionPanel(); });
+document.getElementById('closeVersionPanel').addEventListener('click', closeVersionPanel);
+document.getElementById('overlay').addEventListener('click', () => { if (state.versionOpen) closeVersionPanel(); });
+document.getElementById('fwSelectBtn').addEventListener('click', () => state.selectingTile ? endSelecting() : startSelecting());
+document.getElementById('fwClearTarget').addEventListener('click', clearTarget);
+document.getElementById('fwPost').addEventListener('click', postComment);
+document.getElementById('fwTextarea').addEventListener('keydown', e => { if (e.key==='Enter' && (e.metaKey||e.ctrlKey)) postComment(); });
+document.getElementById('createVersionBtn').addEventListener('click', createVersion);
+document.getElementById('returnToCurrent').addEventListener('click', () => { state.viewingVersion=null; hideBanner(); if (state.windowOpen) renderFeedback(); });
+
+document.addEventListener('click', e => {
+  if (state.versionOpen &&
+      !document.getElementById('versionPanel').contains(e.target) &&
+      !document.getElementById('versionToggle').contains(e.target)) closeVersionPanel();
+  if (state.selectingTile && !e.target.closest('.tile')) endSelecting();
+});
+
+// ═══════════════════════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════════════════════
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════════
+
+renderSitemap();
+updateVersionLabel();
+updateBadges();
+initVisitor();
+updateFooter();
+</script>
+</body>
+</html>
