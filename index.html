@@ -1145,11 +1145,10 @@ async function postComment() {
     tile_id:   state.commentTarget?.id    || null,
     tile_name: state.commentTarget?.title || null,
     body,
-    author: document.getElementById('fwAuthor').value.trim() || 'Anonymous',
-    created_at: new Date().toISOString()
+    author: document.getElementById('fwAuthor').value.trim() || 'Anonymous'
   };
   const { error } = await _sb.from('feedback').insert(record);
-  if (error) { console.error('postComment insert failed:', error); return; }
+  if (error) { console.error('postComment insert failed:', error); alert(`Could not save comment: ${error.message}`); return; }
   document.getElementById('fwTextarea').value = '';
   clearTarget();
   await renderFeedback();
