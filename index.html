@@ -1141,6 +1141,7 @@ async function postComment() {
   const body = document.getElementById('fwTextarea').value.trim();
   if (!body) return;
   const record = {
+    id:        crypto.randomUUID(),
     version:   cur(),
     tile_id:   state.commentTarget?.id    || null,
     tile_name: state.commentTarget?.title || null,
