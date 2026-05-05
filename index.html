@@ -337,6 +337,11 @@
       cursor: pointer; font-family: inherit; font-weight: 600; transition: all .12s;
     }
     .vr-delete-btn:hover { background: #FCD4CF; }
+    .vp-note {
+      font-size: 11px; color: var(--text-muted); line-height: 1.55;
+      padding: 10px 20px 14px; border-top: 1px solid var(--border);
+    }
+
     .new-version-form {
       padding: 16px 20px; border-top: 1px solid var(--border);
       display: flex; flex-direction: column; gap: 10px;
@@ -574,6 +579,7 @@
     </button>
   </div>
   <div class="vp-list" id="versionList"></div>
+  <p class="vp-note">Version history is a design feature. Versions are created manually to track design iterations and stakeholder feedback.</p>
   <div class="new-version-form">
     <div class="nv-title">Create new version</div>
     <div class="nv-row">
@@ -822,7 +828,8 @@ const SITEMAP = [
 //  CONSTANTS + SUPABASE
 // ═══════════════════════════════════════════════════════════
 
-const CURRENT_VERSION = 'v.01'; // bump this before each deploy to trigger a new version
+let _currentVersion = 'v.01'; // updated at deploy time and when a new version is created
+const CURRENT_VERSION = 'v.01'; // deploy-time seed — used only by ensureCurrentVersion()
 const VISITOR_KEY     = 'wwhs-visitor-id';
 const STATS_KEY       = 'wwhs-stats-v2'; // visitor fallback only
 
@@ -880,7 +887,7 @@ async function getTotalFeedback() {
   try {
     const { count } = await _sb.from('feedback')
       .select('*', { count: 'exact', head: true })
-      .eq('version', CURRENT_VERSION);
+      .eq('version', cur());
     return count || 0;
   } catch (e) { return 0; }
 }
@@ -898,9 +905,9 @@ const state = {
   viewingVersion: null
 };
 
-const cur  = () => CURRENT_VERSION;
-const view = () => state.viewingVersion || CURRENT_VERSION;
-const isCur= () => view() === CURRENT_VERSION;
+const cur  = () => _currentVersion;
+const view = () => state.viewingVersion || _currentVersion;
+const isCur= () => view() === _currentVersion;
 
 // ═══════════════════════════════════════════════════════════
 //  TILE BUILDER
@@ -1141,10 +1148,13 @@ async function postComment() {
     author: document.getElementById('fwAuthor').value.trim() || 'Anonymous',
     created_at: new Date().toISOString()
   };
-  try { await _sb.from('feedback').insert(record); } catch (e) { console.warn('postComment:', e); }
+  const { error } = await _sb.from('feedback').insert(record);
+  if (error) { console.error('postComment insert failed:', error); return; }
   document.getElementById('fwTextarea').value = '';
-  clearTarget(); renderFeedback(); updateBadges(); updateFooter(); refreshDots();
+  clearTarget();
+  await renderFeedback();
   document.getElementById('fwBody').scrollTop = 0;
+  updateBadges(); updateFooter(); refreshDots();
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1251,13 +1261,14 @@ async function createVersion() {
   const changelog = document.getElementById('nvChangelog').value.trim();
   if (_versions.find(v => v.name === name)) { alert(`"${name}" already exists.`); return; }
   const record = { name, changelog: changelog || `Created ${name}`, created_at: new Date().toISOString() };
-  try {
-    await _sb.from('versions').insert(record);
-    _versions.unshift(record);
-  } catch (e) { console.warn('createVersion:', e); }
+  const { error } = await _sb.from('versions').insert(record);
+  if (error) { console.error('createVersion insert failed:', error); return; }
+  _versions.unshift(record);
+  _currentVersion = name;
   state.viewingVersion = null;
+  closeVersionPanel();
   hideBanner(); updateVersionLabel(); updateBadges(); updateFooter();
-  renderVersionList(); if (state.windowOpen) renderFeedback(); suggestNext();
+  if (state.windowOpen) renderFeedback();
 }
 
 function switchVersion(name) {
