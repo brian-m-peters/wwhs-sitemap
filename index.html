@@ -762,13 +762,6 @@ const SITEMAP = [
     ]
   },
   {
-    id: 'footer-section', layout: 'footer-row',
-    tiles: [
-      { id: 'footer', type: 'utility', title: 'Footer',
-        desc: 'Privacy Policy, Terms of Use, and legal copy live here only. Also the natural home for trust credentials (CGFNS, AAIHR), years in business, social links, and a condensed repeat of primary nav links. About WWHS moves here as a linked page rather than a nav destination.' }
-    ]
-  },
-  {
     id: 'not-in-nav', layout: 'not-in-nav-section',
     sectionLabel: { title: 'Not Found in Nav', subtitle: 'Accessible within the site' },
     tiles: [
@@ -799,6 +792,13 @@ const SITEMAP = [
     ]
   },
   {
+    id: 'footer-section', layout: 'footer-row',
+    tiles: [
+      { id: 'footer', type: 'utility', title: 'Footer',
+        desc: 'Privacy Policy, Terms of Use, and legal copy live here only. Also the natural home for trust credentials (CGFNS, AAIHR), years in business, social links, and a condensed repeat of primary nav links. About WWHS moves here as a linked page rather than a nav destination.' }
+    ]
+  },
+  {
     id: 'sunset-section', layout: 'sunset-section',
     label: { id: 'sunset-label', type: 'sunset', isLabel: true, title: 'Sunset', subtitle: 'Pages to remove from sitemap' },
     tiles: [
@@ -819,27 +819,41 @@ const SITEMAP = [
 ];
 
 // ═══════════════════════════════════════════════════════════
-//  STORAGE
+//  CONSTANTS + SUPABASE
 // ═══════════════════════════════════════════════════════════
 
-const STORAGE_KEY = 'wwhs-sitemap-v8';
-const STATS_KEY   = 'wwhs-stats-v2';
-const VISITOR_KEY = 'wwhs-visitor-id';
+const CURRENT_VERSION = 'v.01'; // bump this before each deploy to trigger a new version
+const VISITOR_KEY     = 'wwhs-visitor-id';
+const STATS_KEY       = 'wwhs-stats-v2'; // visitor fallback only
 
-function loadStorage() {
-  try { const r = localStorage.getItem(STORAGE_KEY); if (r) return JSON.parse(r); } catch(e) {}
-  return {
-    currentVersion: 'v.01',
-    versions: { 'v.01': { name:'v.01', date: new Date().toISOString(), changelog:'Initial proposed sitemap.', comments:[] } }
-  };
-}
-function saveStorage() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state.storage)); }
-
-// ── Supabase client ──────────────────────────────────────
 const _sb = window.supabase.createClient(
   'https://qzlgwhozmoyumrxcniuc.supabase.co',
   'sb_publishable_r4eEiYEHtOGR88Drq6um1w_rzuXhT8J'
 );
+
+let _versions = []; // [{name, changelog, created_at}] — cached from Supabase
+
+async function ensureCurrentVersion() {
+  try {
+    const { data } = await _sb.from('versions').select('name').eq('name', CURRENT_VERSION).maybeSingle();
+    if (!data) {
+      await _sb.from('versions').insert({
+        name: CURRENT_VERSION, changelog: 'Initial proposed sitemap.',
+        created_at: new Date().toISOString()
+      });
+    }
+  } catch (e) { console.warn('ensureCurrentVersion:', e); }
+}
+
+async function loadVersions() {
+  try {
+    const { data } = await _sb.from('versions').select('*').order('created_at', { ascending: false });
+    _versions = data || [];
+  } catch (e) {
+    console.warn('loadVersions:', e);
+    if (!_versions.length) _versions = [{ name: CURRENT_VERSION, changelog: 'Initial proposed sitemap.', created_at: new Date().toISOString() }];
+  }
+}
 
 async function initVisitor() {
   let id = localStorage.getItem(VISITOR_KEY);
@@ -847,45 +861,32 @@ async function initVisitor() {
     id = 'v' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
     localStorage.setItem(VISITOR_KEY, id);
   }
-
   try {
-    // Check if this visitor already exists
-    const { data: existing } = await _sb
-      .from('visitors')
-      .select('id')
-      .eq('id', id)
-      .maybeSingle();
-
-    // Insert if new
-    if (!existing) {
-      await _sb.from('visitors').insert({ id, first_seen: new Date().toISOString() });
-    }
-
-    // Fetch total row count
-    const { count } = await _sb
-      .from('visitors')
-      .select('*', { count: 'exact', head: true });
-
+    const { data: existing } = await _sb.from('visitors').select('id').eq('id', id).maybeSingle();
+    if (!existing) await _sb.from('visitors').insert({ id, first_seen: new Date().toISOString() });
+    const { count } = await _sb.from('visitors').select('*', { count: 'exact', head: true });
     document.getElementById('sfVisitors').textContent = count ?? '—';
   } catch (err) {
-    // Fallback: use localStorage visitor list
     try {
       const stats = JSON.parse(localStorage.getItem(STATS_KEY) || '{"visitors":[]}');
       if (!stats.visitors.includes(id)) stats.visitors.push(id);
       localStorage.setItem(STATS_KEY, JSON.stringify(stats));
       document.getElementById('sfVisitors').textContent = stats.visitors.length;
-    } catch (_) {
-      document.getElementById('sfVisitors').textContent = '1';
-    }
+    } catch (_) { document.getElementById('sfVisitors').textContent = '1'; }
   }
 }
 
-function getTotalFeedback() {
-  return Object.values(state.storage.versions).reduce((s,v) => s + (v.comments?.length||0), 0);
+async function getTotalFeedback() {
+  try {
+    const { count } = await _sb.from('feedback')
+      .select('*', { count: 'exact', head: true })
+      .eq('version', CURRENT_VERSION);
+    return count || 0;
+  } catch (e) { return 0; }
 }
 
 // ═══════════════════════════════════════════════════════════
-//  STATE
+//  STATE  (UI only — data lives in Supabase)
 // ═══════════════════════════════════════════════════════════
 
 const state = {
@@ -894,15 +895,12 @@ const state = {
   minimized:      false,
   selectingTile:  false,
   commentTarget:  null,
-  viewingVersion: null,
-  storage:        loadStorage()
+  viewingVersion: null
 };
 
-const cur  = () => state.storage.currentVersion;
-const view = () => state.viewingVersion || cur();
-const isCur= () => view() === cur();
-const vd   = (v) => state.storage.versions[v != null ? v : view()];
-const cmts = (v) => vd(v)?.comments || [];
+const cur  = () => CURRENT_VERSION;
+const view = () => state.viewingVersion || CURRENT_VERSION;
+const isCur= () => view() === CURRENT_VERSION;
 
 // ═══════════════════════════════════════════════════════════
 //  TILE BUILDER
@@ -1039,14 +1037,15 @@ function renderSitemap() {
   refreshDots();
 }
 
-function refreshDots() {
+async function refreshDots() {
   document.querySelectorAll('.tile').forEach(el => el.classList.remove('has-comments'));
-  cmts(cur()).forEach(c => {
-    if (c.tileId) {
-      const el = document.querySelector(`[data-tile-id="${c.tileId}"]`);
+  try {
+    const { data } = await _sb.from('feedback').select('tile_id').eq('version', cur()).not('tile_id', 'is', null);
+    (data || []).forEach(c => {
+      const el = document.querySelector(`[data-tile-id="${c.tile_id}"]`);
       if (el) el.classList.add('has-comments');
-    }
-  });
+    });
+  } catch (e) { console.warn('refreshDots:', e); }
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1078,19 +1077,25 @@ function toggleMinimize() {
   document.getElementById('fwMinimize').textContent = state.minimized ? '+' : '−';
 }
 
-function renderFeedback() {
-  const data     = vd(view());
-  const comments = data?.comments || [];
-  const readonly = !isCur();
+async function renderFeedback() {
+  const versionName = view();
+  const versionData = _versions.find(v => v.name === versionName);
+  const readonly    = !isCur();
 
   const strip = document.getElementById('fwVersionStrip');
-  if (data?.changelog) {
+  if (versionData?.changelog) {
     strip.className = 'fw-version-strip show ' + (readonly ? 'readonly' : 'current');
-    document.getElementById('fwVersionName').textContent      = data.name + (readonly ? ' (read-only)' : ' (current)');
-    document.getElementById('fwVersionChangelog').textContent  = data.changelog;
+    document.getElementById('fwVersionName').textContent      = versionData.name + (readonly ? ' (read-only)' : ' (current)');
+    document.getElementById('fwVersionChangelog').textContent  = versionData.changelog;
   } else { strip.className = 'fw-version-strip'; }
 
   document.getElementById('fwFooter').classList.toggle('readonly', readonly);
+
+  let comments = [];
+  try {
+    const { data } = await _sb.from('feedback').select('*').eq('version', versionName).order('created_at', { ascending: false });
+    comments = data || [];
+  } catch (e) { console.warn('renderFeedback:', e); }
 
   const cnt = comments.length;
   document.getElementById('fwCountLabel').textContent = cnt === 1 ? '1 comment' : `${cnt} comments`;
@@ -1100,42 +1105,43 @@ function renderFeedback() {
     list.innerHTML = `<div class="no-comments"><strong>No feedback yet</strong><span>${readonly ? 'No comments were left on this version.' : 'Post a general note or click a tile to target a specific page.'}</span></div>`;
     return;
   }
-  [...comments].reverse().forEach(c => {
+  comments.forEach(c => {
     const card = document.createElement('div');
-    card.className = 'comment-card' + (c.tileId ? ' on-tile' : '');
-    const t = new Date(c.timestamp);
+    card.className = 'comment-card' + (c.tile_id ? ' on-tile' : '');
+    const t = new Date(c.created_at);
     const ts = t.toLocaleDateString('en-US',{month:'short',day:'numeric'}) + ' · ' +
                t.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
     card.innerHTML = `
       <div class="cc-top">
         <div class="cc-meta"><span class="cc-author">${esc(c.author||'Anonymous')}</span><span class="cc-time">${ts}</span></div>
         <div class="cc-right">
-          ${c.tileName ? `<span class="cc-tag">${esc(c.tileName)}</span>` : ''}
+          ${c.tile_name ? `<span class="cc-tag">${esc(c.tile_name)}</span>` : ''}
           ${!readonly ? `<button class="cc-del" data-id="${c.id}">Remove</button>` : ''}
         </div>
       </div>
-      <div class="cc-body">${esc(c.text)}</div>`;
+      <div class="cc-body">${esc(c.body)}</div>`;
     card.querySelector('.cc-del')?.addEventListener('click', () => deleteComment(c.id));
     list.appendChild(card);
   });
 }
 
-function deleteComment(id) {
-  vd(cur()).comments = vd(cur()).comments.filter(c => c.id !== id);
-  saveStorage(); renderFeedback(); updateBadges(); updateFooter(); refreshDots();
+async function deleteComment(id) {
+  try { await _sb.from('feedback').delete().eq('id', id); } catch (e) { console.warn('deleteComment:', e); }
+  renderFeedback(); updateBadges(); updateFooter(); refreshDots();
 }
 
-function postComment() {
-  const text = document.getElementById('fwTextarea').value.trim();
-  if (!text) return;
-  vd(cur()).comments.push({
-    id: 'c_' + Date.now(),
-    tileId:   state.commentTarget?.id    || null,
-    tileName: state.commentTarget?.title || null,
-    text, author: document.getElementById('fwAuthor').value.trim() || 'Anonymous',
-    timestamp: new Date().toISOString()
-  });
-  saveStorage();
+async function postComment() {
+  const body = document.getElementById('fwTextarea').value.trim();
+  if (!body) return;
+  const record = {
+    version:   cur(),
+    tile_id:   state.commentTarget?.id    || null,
+    tile_name: state.commentTarget?.title || null,
+    body,
+    author: document.getElementById('fwAuthor').value.trim() || 'Anonymous',
+    created_at: new Date().toISOString()
+  };
+  try { await _sb.from('feedback').insert(record); } catch (e) { console.warn('postComment:', e); }
   document.getElementById('fwTextarea').value = '';
   clearTarget(); renderFeedback(); updateBadges(); updateFooter(); refreshDots();
   document.getElementById('fwBody').scrollTop = 0;
@@ -1169,12 +1175,12 @@ function endSelecting()   { state.selectingTile = false; document.body.classList
 //  VERSION PANEL
 // ═══════════════════════════════════════════════════════════
 
-function openVersionPanel() {
+async function openVersionPanel() {
   state.versionOpen = true;
   document.getElementById('versionPanel').classList.add('open');
   document.getElementById('overlay').classList.add('show');
   document.getElementById('versionToggle').classList.add('panel-open');
-  renderVersionList(); suggestNext();
+  await renderVersionList(); suggestNext();
 }
 function closeVersionPanel() {
   state.versionOpen = false;
@@ -1183,14 +1189,20 @@ function closeVersionPanel() {
   document.getElementById('versionToggle').classList.remove('panel-open');
 }
 
-function renderVersionList() {
+async function renderVersionList() {
   const list = document.getElementById('versionList'); list.innerHTML = '';
-  Object.values(state.storage.versions)
-    .sort((a,b) => new Date(b.date)-new Date(a.date))
+  const counts = {};
+  try {
+    const { data } = await _sb.from('feedback').select('version');
+    (data || []).forEach(r => { counts[r.version] = (counts[r.version] || 0) + 1; });
+  } catch (e) { console.warn('renderVersionList counts:', e); }
+
+  [..._versions]
+    .sort((a,b) => new Date(b.created_at)-new Date(a.created_at))
     .forEach(v => {
       const isCurrent = v.name === cur();
       const isViewing = v.name === view();
-      const count     = v.comments.length;
+      const count     = counts[v.name] || 0;
       const row = document.createElement('div');
       row.className = 'version-row' + (isViewing ? ' active' : '');
       row.innerHTML = `
@@ -1211,28 +1223,40 @@ function renderVersionList() {
     });
 }
 
-function deleteVersion(name) {
+async function deleteVersion(name) {
   if (name === cur()) return;
-  if (!confirm(`Delete "${name}"? This will permanently remove ${vd(name).comments.length} comment(s).`)) return;
-  delete state.storage.versions[name];
+  let count = 0;
+  try {
+    const { count: c } = await _sb.from('feedback').select('*', { count: 'exact', head: true }).eq('version', name);
+    count = c || 0;
+  } catch (e) { /* proceed with count=0 */ }
+  if (!confirm(`Delete "${name}"? This will permanently remove ${count} comment(s).`)) return;
+  try {
+    await _sb.from('feedback').delete().eq('version', name);
+    await _sb.from('versions').delete().eq('name', name);
+    _versions = _versions.filter(v => v.name !== name);
+  } catch (e) { console.warn('deleteVersion:', e); }
   if (state.viewingVersion === name) { state.viewingVersion = null; hideBanner(); if (state.windowOpen) renderFeedback(); }
-  saveStorage(); renderVersionList(); updateFooter();
+  renderVersionList(); updateFooter();
 }
 
 function suggestNext() {
-  const max = Object.keys(state.storage.versions).reduce((m,v) => { const n=parseInt(v.replace(/\D/g,'')); return isNaN(n)?m:Math.max(m,n); }, 0);
+  const max = _versions.reduce((m,v) => { const n=parseInt(v.name.replace(/\D/g,'')); return isNaN(n)?m:Math.max(m,n); }, 0);
   document.getElementById('nvName').placeholder = `v.${String(max+1).padStart(2,'0')}`;
   document.getElementById('nvName').value = ''; document.getElementById('nvChangelog').value = '';
 }
 
-function createVersion() {
+async function createVersion() {
   let name = document.getElementById('nvName').value.trim() || document.getElementById('nvName').placeholder;
   const changelog = document.getElementById('nvChangelog').value.trim();
-  if (state.storage.versions[name]) { alert(`"${name}" already exists.`); return; }
-  state.storage.versions[name] = { name, date: new Date().toISOString(), changelog: changelog||`Created ${name}`, comments:[] };
-  state.storage.currentVersion = name;
+  if (_versions.find(v => v.name === name)) { alert(`"${name}" already exists.`); return; }
+  const record = { name, changelog: changelog || `Created ${name}`, created_at: new Date().toISOString() };
+  try {
+    await _sb.from('versions').insert(record);
+    _versions.unshift(record);
+  } catch (e) { console.warn('createVersion:', e); }
   state.viewingVersion = null;
-  saveStorage(); hideBanner(); updateVersionLabel(); updateBadges(); updateFooter();
+  hideBanner(); updateVersionLabel(); updateBadges(); updateFooter();
   renderVersionList(); if (state.windowOpen) renderFeedback(); suggestNext();
 }
 
@@ -1249,19 +1273,23 @@ function hideBanner()  { document.getElementById('viewingBanner').classList.remo
 //  BADGES + FOOTER
 // ═══════════════════════════════════════════════════════════
 
-function updateBadges() {
-  const n = cmts(cur()).length;
-  [document.getElementById('navBadge'), document.getElementById('fwBadge')].forEach(b => {
-    b.textContent = n; b.classList.toggle('show', n > 0);
-  });
+async function updateBadges() {
+  try {
+    const { count } = await _sb.from('feedback').select('*', { count: 'exact', head: true }).eq('version', cur());
+    const n = count || 0;
+    [document.getElementById('navBadge'), document.getElementById('fwBadge')].forEach(b => {
+      b.textContent = n; b.classList.toggle('show', n > 0);
+    });
+  } catch (e) { console.warn('updateBadges:', e); }
 }
 
 function updateVersionLabel() {
   document.getElementById('currentVersionLabel').textContent = cur();
 }
 
-function updateFooter() {
-  document.getElementById('sfFeedback').textContent = getTotalFeedback();
+async function updateFooter() {
+  const n = await getTotalFeedback();
+  document.getElementById('sfFeedback').textContent = n;
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1337,12 +1365,16 @@ function esc(s) {
 //  INIT
 // ═══════════════════════════════════════════════════════════
 
-renderSitemap();
-updateVersionLabel();
-updateBadges();
-updateFooter();
-document.getElementById('sfVisitors').textContent = '—';
-initVisitor(); // async — updates sfVisitors when Supabase responds
+(async () => {
+  renderSitemap();
+  updateVersionLabel();
+  document.getElementById('sfVisitors').textContent = '—';
+  await ensureCurrentVersion();
+  await loadVersions();
+  updateBadges();
+  updateFooter();
+  initVisitor();
+})();
 </script>
 </body>
 </html>
