@@ -835,7 +835,8 @@ const SITEMAP = [
 // ═══════════════════════════════════════════════════════════
 
 let _currentVersion = 'v.01'; // updated at deploy time and when a new version is created
-const CURRENT_VERSION = 'v.01'; // deploy-time seed — used only by ensureCurrentVersion()
+const CURRENT_VERSION     = 'v.01';              // deploy-time seed — used only by ensureCurrentVersion()
+const ACTIVE_VERSION_KEY  = 'wwhs-active-version'; // localStorage key for persisting active version
 const VISITOR_KEY     = 'wwhs-visitor-id';
 const STATS_KEY       = 'wwhs-stats-v2'; // visitor fallback only
 
@@ -1273,6 +1274,7 @@ async function createVersion() {
   if (error) { console.error('createVersion insert failed:', error); return; }
   _versions.unshift(record);
   _currentVersion = name;
+  localStorage.setItem(ACTIVE_VERSION_KEY, name);
   state.viewingVersion = null;
   closeVersionPanel();
   hideBanner(); updateVersionLabel(); updateBadges(); updateFooter();
@@ -1289,6 +1291,7 @@ function switchVersion(name) {
 
 function setCurrentVersion(name) {
   _currentVersion = name;
+  localStorage.setItem(ACTIVE_VERSION_KEY, name);
   state.viewingVersion = null;
   hideBanner();
   closeVersionPanel();
@@ -1404,6 +1407,12 @@ function esc(s) {
   document.getElementById('sfVisitors').textContent = '—';
   await ensureCurrentVersion();
   await loadVersions();
+  const _stored = localStorage.getItem(ACTIVE_VERSION_KEY);
+  if (_stored && _versions.find(v => v.name === _stored)) {
+    _currentVersion = _stored;
+  } else {
+    _currentVersion = _versions[0]?.name || CURRENT_VERSION;
+  }
   updateBadges();
   updateFooter();
   initVisitor();
