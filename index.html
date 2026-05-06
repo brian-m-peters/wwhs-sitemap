@@ -325,6 +325,12 @@
     .vr-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
     .vr-count { font-size: 12px; color: var(--text-muted); }
     .vr-badge { background: var(--accent); color: #fff; font-size: 10px; font-weight: 700; padding: 2px 9px; border-radius: 999px; }
+    .vr-view-btn {
+      font-size: 11px; color: var(--text-sub); background: var(--bg);
+      border: 1px solid var(--border); border-radius: 5px; padding: 4px 10px;
+      cursor: pointer; font-family: inherit; font-weight: 600; transition: all .12s;
+    }
+    .vr-view-btn:hover { background: #EEEEF6; border-color: #CACAD8; }
     .vr-switch-btn {
       font-size: 11px; color: var(--accent); background: var(--accent-light);
       border: none; border-radius: 5px; padding: 4px 10px;
@@ -1224,9 +1230,11 @@ async function renderVersionList() {
           <span class="vr-count">${count} ${count===1?'comment':'comments'}</span>
           ${isCurrent
             ? '<span class="vr-badge">Current</span>'
-            : `<button class="vr-switch-btn" data-v="${esc(v.name)}">Set Current</button>
+            : `<button class="vr-view-btn" data-v="${esc(v.name)}">View</button>
+               <button class="vr-switch-btn" data-v="${esc(v.name)}">Set Current</button>
                <button class="vr-delete-btn" data-v="${esc(v.name)}">Delete</button>`}
         </div>`;
+      row.querySelector('.vr-view-btn')?.addEventListener('click', e => { e.stopPropagation(); switchVersion(v.name); });
       row.querySelector('.vr-switch-btn')?.addEventListener('click', e => { e.stopPropagation(); setCurrentVersion(v.name); });
       row.querySelector('.vr-delete-btn')?.addEventListener('click', e => { e.stopPropagation(); deleteVersion(v.name); });
       list.appendChild(row);
@@ -1269,6 +1277,13 @@ async function createVersion() {
   closeVersionPanel();
   hideBanner(); updateVersionLabel(); updateBadges(); updateFooter();
   refreshDots();
+  if (state.windowOpen) renderFeedback();
+}
+
+function switchVersion(name) {
+  state.viewingVersion = name === cur() ? null : name;
+  name === cur() ? hideBanner() : showBanner(name);
+  closeVersionPanel();
   if (state.windowOpen) renderFeedback();
 }
 
