@@ -1224,10 +1224,10 @@ async function renderVersionList() {
           <span class="vr-count">${count} ${count===1?'comment':'comments'}</span>
           ${isCurrent
             ? '<span class="vr-badge">Current</span>'
-            : `<button class="vr-switch-btn" data-v="${esc(v.name)}">View</button>
+            : `<button class="vr-switch-btn" data-v="${esc(v.name)}">Set Current</button>
                <button class="vr-delete-btn" data-v="${esc(v.name)}">Delete</button>`}
         </div>`;
-      row.querySelector('.vr-switch-btn')?.addEventListener('click', e => { e.stopPropagation(); switchVersion(v.name); });
+      row.querySelector('.vr-switch-btn')?.addEventListener('click', e => { e.stopPropagation(); setCurrentVersion(v.name); });
       row.querySelector('.vr-delete-btn')?.addEventListener('click', e => { e.stopPropagation(); deleteVersion(v.name); });
       list.appendChild(row);
     });
@@ -1268,13 +1268,20 @@ async function createVersion() {
   state.viewingVersion = null;
   closeVersionPanel();
   hideBanner(); updateVersionLabel(); updateBadges(); updateFooter();
+  refreshDots();
   if (state.windowOpen) renderFeedback();
 }
 
-function switchVersion(name) {
-  state.viewingVersion = name === cur() ? null : name;
-  name === cur() ? hideBanner() : showBanner(name);
-  closeVersionPanel(); if (state.windowOpen) renderFeedback();
+function setCurrentVersion(name) {
+  _currentVersion = name;
+  state.viewingVersion = null;
+  hideBanner();
+  closeVersionPanel();
+  updateVersionLabel();
+  updateBadges();
+  updateFooter();
+  refreshDots();
+  if (state.windowOpen) renderFeedback();
 }
 
 function showBanner(n) { document.getElementById('viewingVersionLabel').textContent = n; document.getElementById('viewingBanner').classList.add('show'); }
