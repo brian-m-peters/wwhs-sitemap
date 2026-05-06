@@ -1047,8 +1047,6 @@ function renderSitemap() {
       wrap.appendChild(grid); c.appendChild(wrap);
     }
   });
-
-  refreshDots();
 }
 
 async function refreshDots() {
@@ -1403,7 +1401,6 @@ function esc(s) {
 
 (async () => {
   renderSitemap();
-  updateVersionLabel();
   document.getElementById('sfVisitors').textContent = '—';
   await ensureCurrentVersion();
   await loadVersions();
@@ -1413,6 +1410,8 @@ function esc(s) {
   } else {
     _currentVersion = _versions[0]?.name || CURRENT_VERSION;
   }
+  updateVersionLabel();
+  refreshDots();
   updateBadges();
   updateFooter();
   initVisitor();
