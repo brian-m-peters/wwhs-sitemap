@@ -739,8 +739,6 @@ const SITEMAP = [
             desc: "The highest-traffic page on the site is losing 87% of visitors, the content introduces WWHS rather than answering what a nurse actually needs to know. Reformat focused on the candidate's question, with trust signals and CTAs placed where intent is highest." },
           { id: 'allied-professionals', type: 'clinician', title: 'Allied Professionals',
             desc: 'Allied professionals have different roles, requirements, and career concerns than RNs. Maintains its own dedicated page.' },
-          { id: 'middle-east-careers', type: 'clinician', title: 'Middle East Careers',
-            desc: 'Solid page with moderate engagement but confirmed as a low business priority with promotion paused. Stays in the nav pending WWHS future decisions.' }
         ]
       },
       {
@@ -751,7 +749,7 @@ const SITEMAP = [
             desc: "Good engagement time from users who find it, but almost nobody does, it's low traffic, hard to discover, and ends without a clear next step. Needs to become a CTA-driven anchor page that earns its place as the centerpiece of the clinician experience." },
           { id: 'visa-options', type: 'clinician', title: 'Visa Options',
             desc: "Renamed from Visa Pathways to remove ambiguity, users arriving on this page weren't sure if it explained how to get a visa or listed visa types. Moved under How It Works where it belongs as a process page, not a career opportunity." },
-          { id: 'our-approach', type: 'clinician', title: 'Our Approach',
+          { id: 'why-direct-hire', type: 'clinician', title: 'Why Direct Hire',
             desc: 'Strategically important but currently written for the employer, not the candidate. Rebuilt to answer the question a nurse actually has, "what does direct hire mean for my job security and my future in the US?"' }
         ]
       },
@@ -797,6 +795,8 @@ const SITEMAP = [
         desc: "Linked from Candidate Journey step 7. Ten newly published relocation guides exist with no home and no internal links pointing to them. The hub gives them structure and connects them to the moment in the process where they're most relevant." },
       { id: 'nurse-stories-hub', type: 'clinician', title: 'Nurse Stories Hub',
         desc: 'Linked from Registered Nurses, Visa Options, and Candidate Journey. A scannable grid of nurse stories filterable by country and specialty, giving recruiters a stable URL to share in nurture campaigns while giving candidates a place to hear directly from nurses who\'ve been through the process.' },
+      { id: 'middle-east-careers', type: 'clinician', title: 'Middle East Careers',
+        desc: 'Linked from Candidate Journey page. Solid page with moderate engagement but confirmed as a low business priority with promotion paused.' },
       { id: 'about-wwhs', type: 'shared', title: 'About WWHS',
         desc: 'Accessible via footer. Currently 80% bounce, not performing as a nav destination. Rebuilt with trust signals. Credentials surfaced inline on high-intent pages so About WWHS supplements rather than carries the trust load.' },
       { id: 'webinars', type: 'shared', title: 'Webinars',
@@ -823,8 +823,8 @@ const SITEMAP = [
         desc: 'Biden administration immigration pieces, DACA deadline, merit-based legislation, and a 2020 visa bulletin update. All relevant at a specific moment, none relevant now.' },
       { id: 'dated-employer-content', type: 'sunset', title: 'Dated employer blog content', subtitle: '4 posts',
         desc: '2019 staffing challenges, recruitment misdiagnosis, nursing shortage framing, and a recruitment innovation post, outdated angles, minimal traffic, no alignment with current strategy.' },
-      { id: 'legacy-forms', type: 'sunset', title: 'Legacy forms & utility pages', subtitle: '4 pages',
-        desc: 'Client Presentation Guide, GCC Client Presentation Guide, and the old sitemap page are obsolete. The Contact Healthstaff WordPress legacy page has 2,051 sessions and requires a 301 redirect to the new Contact Us page at launch, the only sunset page with meaningful traffic.' },
+      { id: 'legacy-forms', type: 'sunset', title: 'Legacy forms & utility pages', subtitle: '5 pages',
+        desc: 'Client Presentation Guide, GCC Client Presentation Guide, the old sitemap page, and the Virtual Health page are all obsolete. The Contact Healthstaff WordPress legacy page has 2,051 sessions and requires a 301 redirect to the new Contact Us page at launch, the only sunset page with meaningful traffic.' },
       { id: 'nurse-spotlight-hub', type: 'sunset', title: 'Nurse Spotlight hub',
         desc: 'Parent spotlight hub page flagged as duplicative of the Shazamme version. Sunset alongside individual spotlight pages pending the nurse stories strategy decision.' }
     ]
@@ -835,8 +835,8 @@ const SITEMAP = [
 //  CONSTANTS + SUPABASE
 // ═══════════════════════════════════════════════════════════
 
-let _currentVersion = 'v.04'; // updated at deploy time and when a new version is created
-const CURRENT_VERSION     = 'v.04';              // deploy-time seed — used only by ensureCurrentVersion()
+let _currentVersion = 'v.05'; // updated at deploy time and when a new version is created
+const CURRENT_VERSION     = 'v.05';              // deploy-time seed — used only by ensureCurrentVersion()
 const ACTIVE_VERSION_KEY  = 'wwhs-active-version'; // localStorage key for persisting active version
 const VISITOR_KEY     = 'wwhs-visitor-id';
 const STATS_KEY       = 'wwhs-stats-v2'; // visitor fallback only
@@ -853,7 +853,7 @@ async function ensureCurrentVersion() {
     const { data } = await _sb.from('versions').select('name').eq('name', CURRENT_VERSION).maybeSingle();
     if (!data) {
       await _sb.from('versions').insert({
-        name: CURRENT_VERSION, changelog: 'Updates made based on feedback received from v.03.',
+        name: CURRENT_VERSION, changelog: 'Updates made based on feedback received from v.04.',
         created_at: new Date().toISOString()
       });
     }
@@ -866,7 +866,7 @@ async function loadVersions() {
     _versions = data || [];
   } catch (e) {
     console.warn('loadVersions:', e);
-    if (!_versions.length) _versions = [{ name: CURRENT_VERSION, changelog: 'Updates made based on feedback received from v.03.', created_at: new Date().toISOString() }];
+    if (!_versions.length) _versions = [{ name: CURRENT_VERSION, changelog: 'Updates made based on feedback received from v.04.', created_at: new Date().toISOString() }];
   }
 }
 
